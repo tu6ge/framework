@@ -103,8 +103,8 @@ trait HasRelationships
     /**
      * Define a has-one-through relationship.
      *
-     * @param  string  $related
-     * @param  string  $through
+     * @param  string|array  $related
+     * @param  string|array  $through
      * @param  string|null  $firstKey
      * @param  string|null  $secondKey
      * @param  string|null  $localKey
@@ -113,6 +113,20 @@ trait HasRelationships
      */
     public function hasOneThrough($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
     {
+        if(is_array($related)){
+            $_related = $related;
+            $related = current(array_keys($_related));
+            $localKey = current(array_keys(current($_related)));
+            $firstKey = $_related[$related][$localKey];
+        }
+
+        if(is_array($through)){
+            $_through = $through;
+            $through = current(array_keys($_through));
+            $secondLocalKey = current(array_keys(current($_through)));
+            $secondKey = $_through[$related][$secondLocalKey];
+        }
+
         $through = new $through;
 
         $firstKey = $firstKey ?: $this->getForeignKey();
